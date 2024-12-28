@@ -18,16 +18,25 @@ export interface Movie {
     vote_count: number
 }
 
+interface MoviesList {
+    page: number;
+    results: Movie[];
+    total_pages: number;
+    total_results: number;
+}
+
 interface MoviesListsState {
-    popularMovies: Movie[];
-    topRatedMovies: Movie[];
+    popularMovies: MoviesList;
+    topRatedMovies: MoviesList;
     loading: boolean;
     error: string | null
 }
 
+const moviesListInitialState = { page: 0, results: [], total_pages: 0, total_results: 0 }
+
 const initialState: MoviesListsState = {
-    popularMovies: [],
-    topRatedMovies: [],
+    popularMovies: moviesListInitialState,
+    topRatedMovies: moviesListInitialState,
     loading: false,
     error: null
 }
@@ -59,11 +68,8 @@ const movieListsSlice = createSlice({
                 isFulfilled(fetchPopularMovies, fetchTopRatedMovies),
                 (state, action) => {
                     state.loading = false;
-                    if (action.type === fetchPopularMovies.fulfilled.type) {
-                        state.popularMovies = action.payload;
-                    } else if (action.type === fetchTopRatedMovies.fulfilled.type) {
-                        state.topRatedMovies = action.payload;
-                    }
+                    state.popularMovies = action.payload;
+                    state.topRatedMovies = action.payload;
                 }
             )
             .addMatcher(
