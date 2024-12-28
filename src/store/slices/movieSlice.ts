@@ -55,36 +55,32 @@ const movieListsSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            // .addCase(fetchPopularMovies.fulfilled, (state, action) => {
-            //     state.loading = false
-            //     state.popularMovies = action.payload;
-            // })
-            // .addCase(fetchTopRatedMovies.fulfilled, (state, action) => {
-            //     state.loading = false
-            //     state.topRatedMovies = action.payload;
-            // })
             .addMatcher(
                 isFulfilled(fetchPopularMovies, fetchTopRatedMovies),
                 (state, action) => {
-                    state.loading = false
-                    state.popularMovies = action.payload;
-                    state.topRatedMovies = action.payload;
+                    state.loading = false;
+                    if (action.type === fetchPopularMovies.fulfilled.type) {
+                        state.popularMovies = action.payload;
+                    } else if (action.type === fetchTopRatedMovies.fulfilled.type) {
+                        state.topRatedMovies = action.payload;
+                    }
                 }
             )
             .addMatcher(
                 isPending(fetchPopularMovies, fetchTopRatedMovies),
                 (state) => {
-                    state.loading = true
+                    state.loading = true;
+                    state.error = null;
                 }
             )
             .addMatcher(
                 isRejected(fetchPopularMovies, fetchTopRatedMovies),
                 (state, action) => {
-                    state.loading = true;
-                    state.error = action.error.message || "Failed to fetch posts";
+                    state.loading = false;
+                    state.error = action.error.message || "Failed to fetch movies";
                 }
             )
     }
-})
+});
 
 export default movieListsSlice.reducer;
