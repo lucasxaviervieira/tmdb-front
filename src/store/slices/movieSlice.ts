@@ -41,12 +41,12 @@ const initialState: MoviesListsState = {
     error: null
 }
 
-export const fetchPopularMovies = createAsyncThunk("movies/fetchMovies", async () => {
+export const fetchPopularMovies = createAsyncThunk("movies/fetchPopularMovies", async () => {
     const response = await api.get("/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc")
     return response.data
 })
 
-export const fetchTopRatedMovies = createAsyncThunk("movies/fetchMovies", async () => {
+export const fetchTopRatedMovies = createAsyncThunk("movies/fetchTopRatedMovies", async () => {
     const response = await api.get("/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=vote_average.desc&without_genres=99,10755&vote_count.gte=200")
     return response.data
 })
@@ -68,8 +68,11 @@ const movieListsSlice = createSlice({
                 isFulfilled(fetchPopularMovies, fetchTopRatedMovies),
                 (state, action) => {
                     state.loading = false;
-                    state.popularMovies = action.payload;
-                    state.topRatedMovies = action.payload;
+                    if (action.type === fetchPopularMovies.fulfilled.type) {
+                        state.popularMovies = action.payload;
+                    } else if (action.type === fetchTopRatedMovies.fulfilled.type) {
+                        state.topRatedMovies = action.payload;
+                    }
                 }
             )
             .addMatcher(
